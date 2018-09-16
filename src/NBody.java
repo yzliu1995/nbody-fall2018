@@ -20,14 +20,13 @@ public class NBody {
 	 */
 	public static double readRadius(String fname) throws FileNotFoundException  {
 		Scanner s = new Scanner(new File(fname));
-	
-		// TODO: read values at beginning of file to
-		// find the radius
-		
+		double radius = 0;
+		s.nextInt();
+		if(s.hasNextDouble()) {
+			radius = s.nextDouble();
+		}
 		s.close();
-		
-		// TODO: return radius read
-		return 0;	
+		return radius;
 	}
 	
 	/**
@@ -40,20 +39,17 @@ public class NBody {
 	public static Body[] readBodies(String fname) throws FileNotFoundException {
 		
 			Scanner s = new Scanner(new File(fname));
-			
-			// TODO: read # bodies, create array, ignore radius
-			int nb = 0; // # bodies to be read
-			
+			int num = s.nextInt();
+			s.nextDouble();
+			Body[] bodies = new Body[num];
+			int nb = num;
 			for(int k=0; k < nb; k++) {
-				
-				// TODO: read data for each body
-				// construct new body object and add to array
+				bodies[k] = new Body(s.nextDouble(),s.nextDouble(),s.nextDouble(),s.nextDouble(),s.nextDouble(),s.next());
 			}
 			
 			s.close();
 			
-			// TODO: return array of body objects read
-			return null;
+			return bodies;
 	}
 	public static void main(String[] args) throws FileNotFoundException{
 		double totalTime = 157788000.0;
@@ -74,6 +70,17 @@ public class NBody {
 	
 		for(double t = 0.0; t < totalTime; t += dt) {
 			
+			double xforces[] = new double[bodies.length], yforces[] = new double[bodies.length];
+			
+			for(int i = 0; i < bodies.length; i++) {
+				xforces[i] = bodies[i].calcNetForceExertedByX(bodies);
+				yforces[i] = bodies[i].calcNetForceExertedByY(bodies);
+			}
+			
+			for(int i = 0; i < bodies.length; i++) {
+				bodies[i].update(dt, xforces[i], yforces[i]);
+			}
+			
 			// TODO: create double arrays xforces and yforces
 			// to hold forces on each body
 			
@@ -85,7 +92,9 @@ public class NBody {
 			
 			StdDraw.picture(0,0,"images/starfield.jpg");
 			
-			// TODO: loop over all bodies and call draw on each one
+			for(int i = 0; i < bodies.length; i++) {
+					StdDraw.picture(bodies[i].getX(),bodies[i].getY(),"images/"+bodies[i].getName());
+			}
 			
 			StdDraw.show(10);
 		}
